@@ -1,7 +1,5 @@
 #!/bin/bash
 
-sudo su
-
 apt update
 apt install software-properties-common
 
@@ -15,20 +13,20 @@ update-alternatives --config python
 
 curl https://bootstrap.pypa.io/get-pip.py | python - --user
 
-cp /home/ubuntu/.local/bin/pip /usr/bin/
-cp /home/ubuntu/.local/bin/pip3 /usr/bin/
+cp /root/.local/bin/pip /usr/bin/
+cp /root/.local/bin/pip3 /usr/bin/
 
 pip install opencv-contrib-python==3.4.4.19
 pip install numpy==1.14.5
 
-cd ~
+cd /home/ubuntu/bluesalt/
 apt install wget
 wget https://github.com/git-lfs/git-lfs/releases/download/v2.3.4/git-lfs-linux-amd64-2.3.4.tar.gz
 tar -zxf git-lfs-linux-amd64-2.3.4.tar.gz
 cd git-lfs-2.3.4
 ./install.sh
 
-cd ~
+cd /home/ubuntu/bluesalt/
 wget https://developer.nvidia.com/compute/cuda/9.2/Prod2/local_installers/cuda-repo-ubuntu1604-9-2-local_9.2.148-1_amd64
 mv ./cuda-repo-ubuntu1604-9-2-local_9.2.148-1_amd64 ./cuda-repo-ubuntu1604-9-2-local_9.2.148-1_amd64.deb
 dpkg -i cuda-repo-ubuntu1604-9-2-local_9.2.148-1_amd64.deb
@@ -44,6 +42,7 @@ wget https://download.pytorch.org/whl/cu92/torch-0.4.1-cp36-cp36m-linux_x86_64.w
 pip install torch-0.4.1-cp36-cp36m-linux_x86_64.whl
 
 pip install pytorch-ignite==0.1.0
+pip install torchvision==0.2.1
 pip install pillow
 pip install tqdm
 pip install visdom

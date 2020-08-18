@@ -21,7 +21,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--ckpt_dir', help='path to ckpt file',type=str,
             default='./models/pspnet_resnet101_sgd_lr_0.002_epoch_100_test_iou_0.918.pth')
-    parser.add_argument('--img_dir', type = str)
     parser.add_argument('--dataset', type=str, default='figaro',
             help='Name of dataset you want to use default is "figaro"')
     parser.add_argument('--data_dir', help='path to Figaro1k folder', type=str, default='./data/Figaro1k')
@@ -35,7 +34,7 @@ if __name__ == '__main__':
 
     ckpt_dir = args.ckpt_dir
     data_dir = args.data_dir
-    img_dir = args.img_dir
+    img_dir = os.path.join(data_dir, 'Original', 'Testing')
     network = args.networks.lower()
     save_dir = args.save_dir
     device = 'cuda' if args.use_gpu else 'cpu'
@@ -85,13 +84,10 @@ if __name__ == '__main__':
     # prepare images
     imgs = [os.path.join(img_dir, k) for k in sorted(os.listdir(img_dir)) if k.endswith('.jpg')]
     with torch.no_grad():
-        for i, data in enumerate(test_loader):
-            print(data)
+        for i, (data, label) in enumerate(test_loader):
             print('[{:3d}/{:3d}] processing image... '.format(i+1, len(test_loader)))
             net.eval()
-            data = data[i].to(device)
-            temp = i
-            print(type(data))
+            data, label = data.to(device), label.to(device)
 
             # inference
             start = time.time()
@@ -106,7 +102,7 @@ if __name__ == '__main__':
             mask_n = np.zeros((mh, mw, 3))
             mask_n[:,:,0] = 255
             mask_n[:,:,0] *= mask
-            
+
             path = os.path.join(save_dir, "figaro_img_%04d.png" % i)
             image_n = cv2.imread(imgs[i])
 
@@ -127,8 +123,8 @@ if __name__ == '__main__':
             image_n = image_n * 0.5 +  mask_n * 0.5
 
             # log measurements
-            # metric.update((logit, temp))
-            # durations.append(duration)
+            metric.update((logit, label))
+            durations.append(duration)
 
             # write overlay image
             cv2.imwrite(path,image_n)

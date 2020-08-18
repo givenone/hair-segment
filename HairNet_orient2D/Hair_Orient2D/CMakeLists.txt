@@ -32,7 +32,7 @@ INCLUDE_DIRECTORIES(${JPEG_INCLUDE_DIR}
         ${GLFW3_INCLUDE_PATH}
         ${GLEW_INCLUDE_PATH}
         ${GLM_INCLUDE_PATH}
-        /root/OpenMesh-6.3/src
+        /home/ubuntu/OpenMesh-6.3/src
         #${FFTW3F_INCLUDE_DIR}
         )
 
@@ -43,8 +43,8 @@ target_link_libraries(Orient2D
         ${GLFW3_LIBRARY}
 	GLEW
         # ${GLEW_LIBRARY}
-        /root/OpenMesh-6.3/build/Build/lib/libOpenMeshCore.so
-        /root/OpenMesh-6.3/build/Build/lib/libOpenMeshTools.so
+        /home/ubuntu/OpenMesh-6.3/build/Build/lib/libOpenMeshCore.so
+        /home/ubuntu/OpenMesh-6.3/build/Build/lib/libOpenMeshTools.so
 
         ${OpenCV_LIBS}
         ${JPEG_LIBRARIES}

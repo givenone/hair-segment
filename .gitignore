@@ -1,0 +1,7 @@
+for_train
+HairNet
+pytorch-hair-segmentation
+simple_HairNet
+*.tar.gz
+
+

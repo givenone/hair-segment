@@ -72,8 +72,6 @@ class LfwDataset(Dataset):
         parsed = list()
         for line in lines:
             name, num = line.strip().split(' ')
-            print(name)
-            print(num)
             num = format(num, '0>4')
             filename = '{}_{}'.format(name, num)
             parsed.append((name, filename))

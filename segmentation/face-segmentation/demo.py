@@ -79,16 +79,22 @@ if __name__ == '__main__':
             # prepare mask
             pred = torch.sigmoid(logit.cpu())[0][0].data.numpy()
             mh, mw = data.size(2), data.size(3)
-            mask = pred >= 0.5
-		
-            mask_thres = 0.5
-            mask = pred >= mask_thres
-
-            mask_copy = mask * 255
-            path = os.path.join(save_dir, os.path.basename(img_path + "_pred_face_" + str(mask_thres)) +'.png')
-            mask_copy = np.array(mask_copy, dtype=np.uint16)
-            mask_copy = np.where(mask_copy >= 127, 255, 0)
+            mask = pred
+            # mask_thres = 0.5
+            # mask = pred >= mask_thres
+            # print(pred)
+            np.set_printoptions(threshold=sys.maxsize)
+            mask_copy = mask*255
+            path = os.path.join(save_dir, os.path.basename(img_path + "_pred_face") +'.png')
+            # mask_copy = np.array(mask_copy, dtype=np.uint16)
+            # mask_copy = np.where(mask_copy >= 127, 255, 0)
+            
             cv2.imwrite(path, mask_copy)
+            print(mask_copy, file=open("pred_output.txt", "a"))
+            print("\n", file=open("pred_output.txt", "a"))
+            #mask_image = Image.fromarray(mask)
+            #mask_image = mask_image.convert('L')
+            #mask_image.save(path)
 
             mask_n = np.zeros((mh, mw, 3))
             mask_n[:,:,0] = 255

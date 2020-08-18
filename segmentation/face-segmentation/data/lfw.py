@@ -35,7 +35,26 @@ class LfwDataset(Dataset):
 
         mask_path = self.mask_path_list[idx]
         mask = Image.open(mask_path)
-        mask = LfwDataset.rgb2binary(mask)
+
+        mask_arr = np.array(mask)
+        hair_face_map = np.zeros(mask_arr.shape[0:2])
+        
+        face_map = mask_arr == np.array([0, 255, 0])
+        face_map = np.all(face_map, axis=2).astype(np.float32)
+        
+        hair_map = mask_arr == np.array([255, 0, 0])
+        hair_map = np.all(hair_map, axis=2).astype(np.float32)
+        
+        hair_face_map[np.where(hair_map == 1)] = 2
+        hair_face_map[np.where(face_map == 1)] = 1
+        
+        mask = Image.fromarray(hair_face_map)
+
+        #mask.save("./overlay/temp" + str(idx) + ".png")
+        #print("이미지 생성")
+        # mask = rgb_to_ternary(mask)
+
+        # mask = LfwDataset.rgb2binary(mask)
 
         if self.joint_transforms is not None:
             img, mask = self.joint_transforms(img, mask)
@@ -55,15 +74,34 @@ class LfwDataset(Dataset):
 
     def __len__(self):
         return len(self.mask_path_list)
-
+    
     @staticmethod
     def rgb2binary(mask):
-        """transforms RGB mask image to binary hair mask image.
         """
+        transforms RGB mask image to binary hair mask image.
+        """
+        
         mask_arr = np.array(mask)
         mask_map = mask_arr == np.array([0, 255, 0])
         mask_map = np.all(mask_map, axis=2).astype(np.float32)
         return Image.fromarray(mask_map)
+    
+    @staticmethod
+    def rgb_to_ternary(mask):
+        mask_arr = np.array(mask)
+        mask_arr = np.array(mask)
+        hair_face_map = np.zeros(mask_arr.shape[0:2])
+        
+        face_map = mask_arr == np.array([0, 255, 0])
+        face_map = np.all(face_map, axis=2).astype(np.float32)
+        
+        hair_map = mask_arr == np.array([255, 0, 0])
+        hair_map = np.all(hair_map, axis=2).astype(np.float32)
+        
+        hair_face_map[np.where(hair_map == 1)] = 128
+        hair_face_map[np.where(face_map == 1)] = 255
+        
+        return Image.fromarray(hair_face_map)
 
     @staticmethod
     def parse_name_list(fp):
