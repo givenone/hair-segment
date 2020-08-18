@@ -74,6 +74,8 @@ if __name__ == '__main__':
             # inference
             start = time.time()
             logit = net(data)
+            print(logit, file=open("logit.txt", "w"))
+            print(logit.shape)
             duration = time.time() - start
 
             # prepare mask

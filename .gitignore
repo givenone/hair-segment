@@ -3,5 +3,5 @@ HairNet
 pytorch-hair-segmentation
 simple_HairNet
 *.tar.gz
-
+segmentation/hair-segmentation
 
