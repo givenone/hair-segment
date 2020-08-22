@@ -33,7 +33,7 @@ def train_with_ignite(networks, dataset, data_dir, batch_size, img_size,
 
     # device
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-
+    print(device)
     # build model
     model = get_network(networks)
 
