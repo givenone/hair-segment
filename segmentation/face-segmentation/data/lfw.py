@@ -45,8 +45,8 @@ class LfwDataset(Dataset):
         hair_map = mask_arr == np.array([255, 0, 0])
         hair_map = np.all(hair_map, axis=2).astype(np.float32)
         
-        hair_face_map[np.where(hair_map == 1)] = 128
-        hair_face_map[np.where(face_map == 1)] = 255
+        hair_face_map[np.where(hair_map == 1)] = 255
+        hair_face_map[np.where(face_map == 1)] = 128
         
         mask = Image.fromarray(hair_face_map)
         mask = mask.convert('L')
