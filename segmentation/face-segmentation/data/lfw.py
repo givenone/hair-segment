@@ -1,3 +1,4 @@
+
 import os
 import numpy as np
 from PIL import Image
@@ -115,3 +116,4 @@ class LfwDataset(Dataset):
             filename = '{}_{}'.format(name, num)
             parsed.append((name, filename))
         return parsed
+

@@ -31,9 +31,11 @@ def train_with_ignite(networks, dataset, data_dir, batch_size, img_size,
     from ignite.metrics import Loss
     from utils.metrics import MultiThresholdMeasures, Accuracy, IoU, F1score
 
-    # device
+    # device = 'cpu'
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
     print(device)
+
     # build model
     model = get_network(networks)
 
