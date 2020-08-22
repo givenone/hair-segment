@@ -256,6 +256,9 @@ def train_without_ignite(model, loss, batch_size, img_size,
                 model.zero_grad()
                 
                 pred_mask = model(img)
+
+                print(pred_mask, pred_mask.shape)
+                print(mask, mask.shape)
                 
                 if gray_image:
                     l = loss(pred_mask, mask, gray)

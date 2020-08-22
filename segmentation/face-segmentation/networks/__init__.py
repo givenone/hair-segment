@@ -11,7 +11,7 @@ def get_network(name):
     elif name == 'pspnet_squeezenet':
         return PSPNet(num_class=1, base_network='squeezenet')
     elif name == 'pspnet_resnet101':
-        return PSPNet(num_class=1, base_network='resnet101')
+        return PSPNet(num_class=3, base_network='resnet101')
     elif name == 'mobilenet':
         return MobileMattingFCN()
     raise ValueError
