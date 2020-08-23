@@ -32,7 +32,7 @@ def get_loader(dataset, data_dir='./data/Figaro1k', train=True, batch_size=64, s
                           mask_transforms=mask_transforms)
     else:
         raise ValueError
-
+    print(dset)
     loader = DataLoader(dset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers)
 
     return loader

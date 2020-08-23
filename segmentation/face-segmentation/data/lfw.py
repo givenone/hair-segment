@@ -39,16 +39,18 @@ class LfwDataset(Dataset):
 
         mask_arr = np.array(mask)
         hair_face_map = np.zeros(mask_arr.shape[0:2])
-        
+
         face_map = mask_arr == np.array([0, 255, 0])
         face_map = np.all(face_map, axis=2).astype(np.float32)
         
         hair_map = mask_arr == np.array([255, 0, 0])
         hair_map = np.all(hair_map, axis=2).astype(np.float32)
         
-        hair_face_map[np.where(hair_map == 1)] = 1
-        hair_face_map[np.where(face_map == 1)] = 2
+
+        hair_face_map[np.where(hair_map == 1)] = 1 # hair = [0, 1, 0]
+        hair_face_map[np.where(face_map == 1)] = 2 # face = [0, 0, 1]
         
+        #mask = hair_face_map
         mask = Image.fromarray(hair_face_map)
         mask = mask.convert('L')
 
@@ -71,8 +73,15 @@ class LfwDataset(Dataset):
             gray = img.convert('L')
             gray = np.array(gray,dtype=np.float32)[np.newaxis,]/255
             return img, mask, gray
+        flag = mask[0,:,:] # (256, 256), 0 or 1 or 2
 
-        return img, mask
+        import torch
+        new_mask = torch.zeros(img.shape) # (3, 256, 256)
+        new_mask[0, flag == 0] = 1
+        new_mask[1, flag == 1] = 1
+        new_mask[2, flag == 2] = 1   
+        # print(new_mask[:,10,10]) for random debugging.
+        return img, new_mask
 
     def __len__(self):
         return len(self.mask_path_list)
