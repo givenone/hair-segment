@@ -256,9 +256,6 @@ def train_without_ignite(model, loss, batch_size, img_size,
                 model.zero_grad()
                 
                 pred_mask = model(img)
-
-                print(pred_mask, pred_mask.shape)
-                print(mask, mask.shape)
                 
                 if gray_image:
                     l = loss(pred_mask, mask, gray)
@@ -273,6 +270,8 @@ def train_without_ignite(model, loss, batch_size, img_size,
             
             epoch_loss = running_loss / len(data_loader[phase])
             
+            torch.save(model.state_dict(), ckpt_path + str(epoch))
+
             if phase == 'train':
                 logger.info(f"Training Results - Epoch: {epoch} Avg-loss: {epoch_loss:.3f}")
                 if viz:
