@@ -55,7 +55,10 @@ class LfwDataset(Dataset):
         #print(mask.shape, flag.shape, flag.sum(), mask.sum())
         import torch
         
-        img = torch.from_numpy(np.array(img))
+        img = np.array(img)
+        img = np.swapaxes(img, 1, 2)
+        img = np.swapaxes(img, 0, 1)
+        img = torch.from_numpy(img)
         new_mask = torch.zeros(img.shape) # (3, 256, 256)
         print(img.shape, new_mask.shape)
         new_mask[0, flag == 0] = 1
