@@ -57,8 +57,8 @@ class LfwDataset(Dataset):
         img = np.array(img)
         img = np.swapaxes(img, 1, 2)
         img = np.swapaxes(img, 0, 1)
-        img = torch.from_numpy(img)
-        new_mask = torch.zeros(img.shape) # (3, 256, 256)
+        img = torch.from_numpy(img).type(torch.cuda.FloatTensor)
+        new_mask = torch.zeros(img.shape).type(torch.cuda.FloatTensor) # (3, 256, 256)
         #print(img.shape, new_mask.shape)
         
         flag = torch.from_numpy(mask) # (256, 256), 0 or 1 or 
