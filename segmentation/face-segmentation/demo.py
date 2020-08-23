@@ -75,18 +75,23 @@ if __name__ == '__main__':
             start = time.time()
             logit = net(data)
             print(logit, file=open("logit.txt", "w"))
-            print(logit.shape)
+            # print(logit.shape)
             duration = time.time() - start
 
             # prepare mask
-            pred = torch.sigmoid(logit.cpu())[0][0].data.numpy()
+            #pred = torch.sigmoid(logit.cpu())[0][0].data.numpy()
+            pred = torch.sigmoid(logit.cpu())[0].data.numpy() # 3 x 256 x 256
+            mask = np.argmax(pred, axis=0) # 256 x 256
             mh, mw = data.size(2), data.size(3)
-            mask = pred
+            
+            print(mask)
             # mask_thres = 0.5
             # mask = pred >= mask_thres
             # print(pred)
             np.set_printoptions(threshold=sys.maxsize)
-            mask_copy = mask*255
+
+            mask_copy = mask*127 # for grayscale image
+
             path = os.path.join(save_dir, os.path.basename(img_path + "_pred_face") +'.png')
             # mask_copy = np.array(mask_copy, dtype=np.uint16)
             # mask_copy = np.where(mask_copy >= 127, 255, 0)
@@ -99,8 +104,9 @@ if __name__ == '__main__':
             #mask_image.save(path)
 
             mask_n = np.zeros((mh, mw, 3))
-            mask_n[:,:,0] = 255
-            mask_n[:,:,0] *= mask
+            mask_n[mask==0,0] = 255
+            mask_n[mask==1,1] = 255
+            mask_n[mask==2,2] = 255
 
             path = os.path.join(save_dir, os.path.basename(img_path)+'.png')
             image_n = np.array(img)
