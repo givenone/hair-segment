@@ -213,7 +213,7 @@ def train_without_ignite(model, loss, batch_size, img_size,
         std_trnsf.ToTensor()
         ])
     
-    data_loader['train'] = get_loader(dataset='figaro',
+    data_loader['train'] = get_loader(dataset=dataset,
                               train=True,
                               joint_transforms=joint_transforms,
                               image_transforms=train_image_transforms,
@@ -223,7 +223,7 @@ def train_without_ignite(model, loss, batch_size, img_size,
                               num_workers=num_workers,
                               gray_image=gray_image)
 
-    data_loader['test'] = get_loader(dataset='figaro',
+    data_loader['test'] = get_loader(dataset=dataset,
                              train=False,
                              joint_transforms=test_joint_transforms,
                              image_transforms=test_image_transforms,
