@@ -51,7 +51,6 @@ class LfwDataset(Dataset):
         hair_face_map[np.where(face_map == 1)] = 2 # face = [0, 0, 1]
         
         mask = hair_face_map
-        flag = mask # (256, 256), 0 or 1 or 
         #print(mask.shape, flag.shape, flag.sum(), mask.sum())
         import torch
         
@@ -60,7 +59,10 @@ class LfwDataset(Dataset):
         img = np.swapaxes(img, 0, 1)
         img = torch.from_numpy(img)
         new_mask = torch.zeros(img.shape) # (3, 256, 256)
-        print(img.shape, new_mask.shape)
+        #print(img.shape, new_mask.shape)
+        
+        flag = torch.from_numpy(mask) # (256, 256), 0 or 1 or 
+
         new_mask[0, flag == 0] = 1
         new_mask[1, flag == 1] = 1
         new_mask[2, flag == 2] = 1   
