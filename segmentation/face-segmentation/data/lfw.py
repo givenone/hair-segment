@@ -50,37 +50,18 @@ class LfwDataset(Dataset):
         hair_face_map[np.where(hair_map == 1)] = 1 # hair = [0, 1, 0]
         hair_face_map[np.where(face_map == 1)] = 2 # face = [0, 0, 1]
         
-        #mask = hair_face_map
-        mask = Image.fromarray(hair_face_map)
-        mask = mask.convert('L')
-
-        #mask.save("./overlay/temp" + str(idx) + ".png")
-        #print("이미지 생성")
-        # mask = rgb_to_ternary(mask)
-
-        # mask = LfwDataset.rgb2binary(mask)
-
-        if self.joint_transforms is not None:
-            img, mask = self.joint_transforms(img, mask)
-
-        if self.image_transforms is not None:
-            img = self.image_transforms(img)
-
-        if self.mask_transforms is not None:
-            mask = self.mask_transforms(mask)
-
-        if self.gray_image:
-            gray = img.convert('L')
-            gray = np.array(gray,dtype=np.float32)[np.newaxis,]/255
-            return img, mask, gray
-        flag = mask[0,:,:] # (256, 256), 0 or 1 or 2
-
+        mask = hair_face_map
+        flag = mask # (256, 256), 0 or 1 or 
+        #print(mask.shape, flag.shape, flag.sum(), mask.sum())
         import torch
+        
+        img = torch.from_numpy(np.array(img))
         new_mask = torch.zeros(img.shape) # (3, 256, 256)
+        print(img.shape, new_mask.shape)
         new_mask[0, flag == 0] = 1
         new_mask[1, flag == 1] = 1
         new_mask[2, flag == 2] = 1   
-        # print(new_mask[:,10,10]) for random debugging.
+        #print(new_mask[:,10,10]) #  for random debugging.
         return img, new_mask
 
     def __len__(self):
