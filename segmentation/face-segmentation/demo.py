@@ -66,8 +66,13 @@ if __name__ == '__main__':
         for i, img_path in enumerate(img_paths, 1):
             print('[{:3d}/{:3d}] processing image... '.format(i, len(img_paths)))
             img = Image.open(img_path)
-            data = test_image_transforms(img)
-            data = torch.unsqueeze(data, dim=0)
+            #data = test_image_transforms(img)
+            img = np.array(img).astype(np.float32)
+            img = np.swapaxes(img, 1, 2)
+            img = np.swapaxes(img, 0, 1)
+            img = torch.from_numpy(img)
+            data = torch.unsqueeze(img, dim=0)
+            
             net.eval()
             data = data.to(device)
 
@@ -104,6 +109,9 @@ if __name__ == '__main__':
             mask_n[mask==2,2] = 255
 
             path = os.path.join(save_dir, os.path.basename(img_path)+'.png')
+            
+            # reopen img. img is original file (PIL image)
+            img = Image.open(img_path)
             image_n = np.array(img)
             image_n = cv2.cvtColor(image_n, cv2.COLOR_RGB2BGR)
             # discard padded area
