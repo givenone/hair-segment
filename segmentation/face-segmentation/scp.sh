@@ -1,0 +1,1 @@
+scp -i "C:/Users/yeap98/Desktop/aws_key/soma_aws.pem" ubuntu@ec2-15-165-76-247.ap-northeast-2.compute.amazonaws.com:~/soma-experiment/segmentation/face-segmentation/overlay/* 'C:\Users\yeap98\Desktop\hair_manipulation\soma-experiment\segmentation'

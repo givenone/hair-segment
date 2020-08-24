@@ -6,7 +6,7 @@ python main.py \
   --data_dir ./data/Lfw \
   --scheduler ReduceLROnPlateau \
   --batch_size 4 \
-  --epochs 1 \
+  --epochs 150 \
   --lr 1e-3 \
   --num_workers 2 \
   --optimizer adam \
