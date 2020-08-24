@@ -117,7 +117,7 @@ def train_with_ignite(networks, dataset, data_dir, batch_size, img_size,
 
     # make ckpt path
     ckpt_root = './ckpt/'
-    filename = '{network}_{optimizer}_lr_{lr}_epoch_{epoch}.pth'
+    filename = '{network}_new_{epoch}.pth'
     ckpt_path = os.path.join(ckpt_root, filename)
 
     # execution after every training iteration

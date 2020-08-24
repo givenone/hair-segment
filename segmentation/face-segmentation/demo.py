@@ -75,33 +75,28 @@ if __name__ == '__main__':
             start = time.time()
             logit = net(data)
             print(logit, file=open("logit.txt", "w"))
-            # print(logit.shape)
             duration = time.time() - start
 
             # prepare mask
-            #pred = torch.sigmoid(logit.cpu())[0][0].data.numpy()
-            pred = torch.sigmoid(logit.cpu())[0].data.numpy() # 3 x 256 x 256
-            mask = np.argmax(pred, axis=0) # 256 x 256
+            pred = torch.sigmoid(logit.cpu())[0].data.numpy() # 3 x 256 x 256, why cpu?
+            mask = np.argmax(pred, axis=0) # 256 x 256, 0 or 1 or 2
             mh, mw = data.size(2), data.size(3)
             
-            print(mask)
-            # mask_thres = 0.5
-            # mask = pred >= mask_thres
-            # print(pred)
+            # for debugging
+            unique, counts = np.unique(mask, return_counts=True)
+            
+            print(dict(zip(unique, counts)))
+
+            
             np.set_printoptions(threshold=sys.maxsize)
 
             mask_copy = mask*127 # for grayscale image
 
             path = os.path.join(save_dir, os.path.basename(img_path + "_pred_face") +'.png')
-            # mask_copy = np.array(mask_copy, dtype=np.uint16)
-            # mask_copy = np.where(mask_copy >= 127, 255, 0)
             
             cv2.imwrite(path, mask_copy)
             print(mask_copy, file=open("pred_output.txt", "a"))
             print("\n", file=open("pred_output.txt", "a"))
-            #mask_image = Image.fromarray(mask)
-            #mask_image = mask_image.convert('L')
-            #mask_image.save(path)
 
             mask_n = np.zeros((mh, mw, 3))
             mask_n[mask==0,0] = 255

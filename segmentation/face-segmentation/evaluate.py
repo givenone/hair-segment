@@ -95,7 +95,7 @@ if __name__ == '__main__':
             duration = time.time() - start
 
             # prepare mask
-            pred = torch.sigmoid(logit.cpu())[0][0].data.numpy()
+            #pred = torch.sigmoid(logit.cpu())[0][0].data.numpy() # why cpu?
             mh, mw = data.size(2), data.size(3)
             mask = pred >= 0.5
 
