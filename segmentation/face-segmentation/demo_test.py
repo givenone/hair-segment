@@ -73,7 +73,10 @@ if __name__ == '__main__':
             # 4. Down-sample to 250x250 and save it
             # 5. inference (segmentation) to make mask using down-sampled image.
             img = Image.open(img_path)
+            
             img = np.array(img).astype(np.float32)
+
+            print(img.shape)
 
             import dlib
             detector = dlib.get_frontal_face_detector()
@@ -87,10 +90,12 @@ if __name__ == '__main__':
                 y2 = face.bottom()
                 size = max(x2-x1, y2-y1)
 
-                x1 = x1-0.5*size
-                y1 = y1-0.5*size 
+                x1 = max(0, int(x1-0.5*size))
+                y1 = max(0, int(y1-0.5*size)) 
 
-                cropped_img = img[x1: x1+2*size, y1: y1+2*size]
+                square_size = min(2*size, img.shape[1] - y1, img.shape[2] - x1)
+
+                cropped_img = img[x1: x1+square_size, y1: y1+square_size]
                 cv2.imwrite("cropped.png", cropped_img) # TODO :: file path !!
 
             # resize (250 250) and save
@@ -98,6 +103,8 @@ if __name__ == '__main__':
             img = img.resize((250,250))
             img = np.array(img).astype(np.float32)
             cv2.imwrite("image250.png", img)
+
+            print(img.shape)
 
             img = np.swapaxes(img, 1, 2)
             img = np.swapaxes(img, 0, 1)
