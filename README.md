@@ -1,9 +1,6 @@
-# soma-experiment
-
-
 
 ## Segmentation
-https://github.com/YBIGTA/pytorch-hair-segmentation
+https://github.com/YBIGTA/pytorch-hair-segmentation 
 
 ```Workspace``` <br>
 AWS Ubuntu Server 16.04 LTS (HVM), SSD Volume Type - ami-04781752c9b20ea41 (64비트 x86) >> gpu instance g4dn.xlarge <br>
@@ -32,9 +29,3 @@ gpu : NVIDIA T4 Tensor 코어 GPU x1 <br>
 (hair segmentation) <br>
 ```sh .../hair-segmentation/run_demo.sh```
 <br><br>
-
-## Orientation
-https://github.com/papagina/HairNet_orient2D
-
-```Workspace``` <br>
-Windows10 Docker Container created by Ubuntu 16.04 docker image
