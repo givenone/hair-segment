@@ -60,82 +60,80 @@ if __name__ == '__main__':
 
     durations = list()
 
+    img_path = img_dir
     # prepare images
-    img_paths = [os.path.join(img_dir, k) for k in sorted(os.listdir(img_dir)) if has_img_ext(k)]
     with torch.no_grad():
-        for i, img_path in enumerate(img_paths, 1):
-            print('[{:3d}/{:3d}] processing image... '.format(i, len(img_paths)))
+        
+        # Now, Input is not cropped one.
+        # 1. Detect Box containing face (with some padding) -> using dlib.
+        # 2. Make it square
+        # 3. Save Cropped image (high-resolution)
+        # 4. Down-sample to 250x250 and save it
+        # 5. inference (segmentation) to make mask using down-sampled image.
 
-            # Now, Input is not cropped one.
-            # 1. Detect Box containing face (with some padding) -> using dlib.
-            # 2. Make it square
-            # 3. Save Cropped image (high-resolution)
-            # 4. Down-sample to 250x250 and save it
-            # 5. inference (segmentation) to make mask using down-sampled image.
-            img = Image.open(img_path)
-            
-            img = np.array(img).astype(np.float32)
+        img = Image.open(img_path)
+        
+        img = np.array(img)
 
-            print(img.shape)
+        print(img.shape)
 
-            import dlib
-            detector = dlib.get_frontal_face_detector()
-            shape_predictor = dlib.shape_predictor('res/68.dat')
-            boxes = detector(img)
-            for face in faces: 
-                # The face landmarks code begins from here 
-                x1 = face.left() 
-                y1 = face.top() 
-                x2 = face.right() 
-                y2 = face.bottom()
-                size = max(x2-x1, y2-y1)
+        import dlib
+        detector = dlib.get_frontal_face_detector()
+        shape_predictor = dlib.shape_predictor('res/68.dat')
+        boxes = detector(img)
+        for face in boxes: 
+            # The face landmarks code begins from here 
+            x1 = face.left() 
+            y1 = face.top() 
+            x2 = face.right() 
+            y2 = face.bottom()
+            size = max(x2-x1, y2-y1)
 
-                x1 = max(0, int(x1-0.5*size))
-                y1 = max(0, int(y1-0.5*size)) 
+            x1 = max(0, int(x1-size))
+            y1 = max(0, int(y1-size)) 
 
-                square_size = min(2*size, img.shape[1] - y1, img.shape[2] - x1)
+            square_size = min(3*size, img.shape[0] - y1, img.shape[1] - x1)
 
-                cropped_img = img[x1: x1+square_size, y1: y1+square_size]
-                cv2.imwrite("cropped.png", cropped_img) # TODO :: file path !!
+            cropped_img = img[x1: x1+square_size, y1: y1+square_size]
+            cv2.imwrite(img_path + "cropped.png", cv2.cvtColor(cropped_img, cv2.COLOR_BGR2RGB)) # TODO :: file path !!
 
-            # resize (250 250) and save
-            img = Image.fromarray(cropped_img, 'RGB')
-            img = img.resize((250,250))
-            img.save("image250.png")
+        # resize (250 250) and save
+        img = Image.fromarray(cropped_img, 'RGB')
+        img = img.resize((250,250))
+        img.save(img_path + "image250.png")
 
-            data = test_image_transforms(img)
-            data = torch.unsqueeze(img, dim=0)
-            
-            net.eval()
-            data = data.to(device)
+        data = test_image_transforms(img)
+        data = torch.unsqueeze(data, dim=0)
+        
+        net.eval()
+        data = data.to(device)
 
-            # inference
-            start = time.time()
-            logit = net(data)
-            duration = time.time() - start
+        # inference
+        start = time.time()
+        logit = net(data)
+        duration = time.time() - start
 
-            # prepare mask
-            pred = torch.sigmoid(logit.cpu())[0].data.numpy() # 3 x 256 x 256, why cpu?
-            mask = np.argmax(pred, axis=0) # 256 x 256, 0 or 1 or 2
-            mh, mw = data.size(2), data.size(3)
+        # prepare mask
+        pred = torch.sigmoid(logit.cpu())[0].data.numpy() # 3 x 256 x 256, why cpu?
+        mask = np.argmax(pred, axis=0) # 256 x 256, 0 or 1 or 2
+        mh, mw = data.size(2), data.size(3)
+        print(mask.shape)
+        image_n = np.array(img)
+        ih, iw, _ = image_n.shape
+        delta_h = mh - ih
+        delta_w = mw - iw
+        top = delta_h // 2
+        bottom = mh - (delta_h - top)
+        left = delta_w // 2
+        right = mw - (delta_w - left)
 
-            image_n = np.array(img)
-            ih, iw, _ = image_n.shape
-            delta_h = mh - ih
-            delta_w = mw - iw
-            top = delta_h // 2
-            bottom = mh - (delta_h - top)
-            left = delta_w // 2
-            right = mw - (delta_w - left)
+        
+        mask_copy = mask*127 # for grayscale image
+        mask_n = mask_copy[top:bottom, left:right]
 
-            
-            mask_copy = mask*127 # for grayscale image
-            mask_n = mask_copy[top:bottom, left:right, :]
-
-            cv2.imwrite("mask.png", mask_copy)
-
-            break
+        cv2.imwrite(img_path + "mask.png", mask_copy)
 
 
-    avg_fps = sum(durations)/len(durations)
-    print('Avg-FPS:', avg_fps)
+        # overlay for check resizing (256 vs 250 issue!)
+
+
