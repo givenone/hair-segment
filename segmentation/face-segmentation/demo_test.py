@@ -75,7 +75,6 @@ if __name__ == '__main__':
         
         img = np.array(img)
 
-        print(img.shape)
 
         import dlib
         detector = dlib.get_frontal_face_detector()
@@ -94,7 +93,7 @@ if __name__ == '__main__':
 
             square_size = min(3*size, img.shape[0] - y1, img.shape[1] - x1)
 
-            cropped_img = img[x1: x1+square_size, y1: y1+square_size]
+            cropped_img = img[y1: y1+square_size, x1: x1+square_size]
             cv2.imwrite(img_path + "cropped.png", cv2.cvtColor(cropped_img, cv2.COLOR_BGR2RGB)) # TODO :: file path !!
 
         # resize (250 250) and save
@@ -117,7 +116,7 @@ if __name__ == '__main__':
         pred = torch.sigmoid(logit.cpu())[0].data.numpy() # 3 x 256 x 256, why cpu?
         mask = np.argmax(pred, axis=0) # 256 x 256, 0 or 1 or 2
         mh, mw = data.size(2), data.size(3)
-        print(mask.shape)
+        
         image_n = np.array(img)
         ih, iw, _ = image_n.shape
         delta_h = mh - ih
@@ -132,8 +131,5 @@ if __name__ == '__main__':
         mask_n = mask_copy[top:bottom, left:right]
 
         cv2.imwrite(img_path + "mask.png", mask_copy)
-
-
-        # overlay for check resizing (256 vs 250 issue!)
 
 
