@@ -46,27 +46,24 @@ class LfwDataset(Dataset):
         hair_map = mask_arr == np.array([255, 0, 0])
         hair_map = np.all(hair_map, axis=2).astype(np.float32)
         
-
         hair_face_map[np.where(hair_map == 1)] = 1 # hair = [0, 1, 0]
         hair_face_map[np.where(face_map == 1)] = 2 # face = [0, 0, 1]
         
         mask = hair_face_map
+
+        if self.image_transforms is not None:
+            img = self.image_transforms(img)
+
         #print(mask.shape, flag.shape, flag.sum(), mask.sum())
         import torch
-        
-        img = np.array(img).astype(np.float32)
-        img = np.swapaxes(img, 1, 2)
-        img = np.swapaxes(img, 0, 1)
-        img = torch.from_numpy(img)
         new_mask = torch.zeros(img.shape) # (3, 256, 256)
-        #print(img.shape, new_mask.shape)
         
         flag = torch.from_numpy(mask) # (256, 256), 0 or 1 or 
 
         new_mask[0, flag == 0] = 1
         new_mask[1, flag == 1] = 1
         new_mask[2, flag == 2] = 1   
-        #print(new_mask[:,10,10]) #  for random debugging.
+
         return img, new_mask
 
     def __len__(self):

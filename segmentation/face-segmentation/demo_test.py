@@ -101,14 +101,9 @@ if __name__ == '__main__':
             # resize (250 250) and save
             img = Image.fromarray(cropped_img, 'RGB')
             img = img.resize((250,250))
-            img = np.array(img).astype(np.float32)
-            cv2.imwrite("image250.png", img)
+            img.save("image250.png")
 
-            print(img.shape)
-
-            img = np.swapaxes(img, 1, 2)
-            img = np.swapaxes(img, 0, 1)
-            img = torch.from_numpy(img)
+            data = test_image_transforms(img)
             data = torch.unsqueeze(img, dim=0)
             
             net.eval()
@@ -123,10 +118,19 @@ if __name__ == '__main__':
             pred = torch.sigmoid(logit.cpu())[0].data.numpy() # 3 x 256 x 256, why cpu?
             mask = np.argmax(pred, axis=0) # 256 x 256, 0 or 1 or 2
             mh, mw = data.size(2), data.size(3)
+
+            image_n = np.array(img)
+            ih, iw, _ = image_n.shape
+            delta_h = mh - ih
+            delta_w = mw - iw
+            top = delta_h // 2
+            bottom = mh - (delta_h - top)
+            left = delta_w // 2
+            right = mw - (delta_w - left)
+
             
             mask_copy = mask*127 # for grayscale image
-
-            #path = os.path.join(save_dir, os.path.basename(img_path + "_mask") +'.png')
+            mask_n = mask_copy[top:bottom, left:right, :]
 
             cv2.imwrite("mask.png", mask_copy)
 
